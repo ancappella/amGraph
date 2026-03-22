@@ -1,3 +1,4 @@
+# macOS: if `make` fails with xcrun invalid developer path, use: ./scripts/codegen.sh (or: brew install make && gmake api)
 GOHOSTOS:=$(shell go env GOHOSTOS)
 GOPATH:=$(shell go env GOPATH)
 VERSION=$(shell git describe --tags --always)

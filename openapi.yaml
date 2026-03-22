@@ -3,15 +3,13 @@
 
 openapi: 3.0.3
 info:
-    title: Greeter API
-    description: The greeting service definition.
+    title: ""
     version: 0.0.1
 paths:
     /helloworld/{name}:
         get:
             tags:
                 - Greeter
-                - subgroup
             description: Sends a greeting
             operationId: Greeter_SayHello
             parameters:
@@ -27,6 +25,64 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/helloworld.v1.HelloReply'
+    /v1/map/features:
+        get:
+            tags:
+                - Map
+            operationId: Map_ListFeatures
+            parameters:
+                - name: pageSize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pageOffset
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/map.v1.ListFeaturesReply'
+        post:
+            tags:
+                - Map
+            operationId: Map_CreateFeature
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/map.v1.CreateFeatureRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/map.v1.Feature'
+    /v1/map/features/{id}:
+        get:
+            tags:
+                - Map
+            operationId: Map_GetFeature
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/map.v1.Feature'
 components:
     schemas:
         helloworld.v1.HelloReply:
@@ -35,5 +91,40 @@ components:
                 message:
                     type: string
             description: The response message containing the greetings
+        map.v1.CreateFeatureRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                description:
+                    type: string
+                geojson:
+                    type: string
+                    description: GeoJSON Geometry or Feature object as JSON text, e.g. {"type":"Point","coordinates":[116.4,39.9]}
+        map.v1.Feature:
+            type: object
+            properties:
+                id:
+                    type: string
+                name:
+                    type: string
+                description:
+                    type: string
+                geojson:
+                    type: string
+                createdAt:
+                    type: string
+                updatedAt:
+                    type: string
+        map.v1.ListFeaturesReply:
+            type: object
+            properties:
+                features:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/map.v1.Feature'
 tags:
     - name: Greeter
+      description: The greeting service definition.
+    - name: Map
+      description: Map stores geographic features as GeoJSON (RFC 7946) in PostgreSQL JSONB.

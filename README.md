@@ -1,51 +1,32 @@
 # Kratos Project Template
 
-## Install Kratos
-```
-go install github.com/go-kratos/kratos/cmd/kratos/v2@latest
-```
-## Create a service
-```
-# Create a template project
-kratos new server
+框架使用 [Kratos](https://github.com/go-kratos/kratos)。
 
-cd server
-# Add a proto template
-kratos proto add api/server/server.proto
-# Generate the proto code
-kratos proto client api/server/server.proto
-# Generate the source code of service by proto file
-kratos proto server api/server/server.proto -t internal/service
+## 服务启动
 
-go generate ./...
-go build -o ./bin/ ./...
-./bin/server -conf ./configs
-```
-## Generate other auxiliary files by Makefile
-```
-# Download and update dependencies
-make init
-# Generate API files (include: pb.go, http, grpc, validate, swagger) by proto file
-make api
-# Generate all files
-make all
-```
-## Automated Initialization (wire)
-```
-# install wire
-go get github.com/google/wire/cmd/wire
+1. 准备 PostgreSQL（与 `configs/config.yaml` 中 `data.database.source` 一致），或按需改配置。
+2. 生成代码并编译：
 
-# generate wire
-cd cmd/server
-wire
-```
-
-## Docker
 ```bash
-# build
-docker build -t <your-docker-image-name> .
-
-# run
-docker run --rm -p 8000:8000 -p 9000:9000 -v </path/to/your/configs>:/data/conf <your-docker-image-name>
+./scripts/codegen.sh
+go build -o bin/amGraph ./cmd/amGraph
+./bin/amGraph -conf ./configs
 ```
 
+`./scripts/codegen.sh` 等价于 `make api && make config && go generate ./...`，但使用 **Homebrew 的 `gmake`** 并自动把 `protoc-gen-*` 装到项目内 `.tools/bin`，避免 macOS 自带 **`/usr/bin/make` 因 Command Line Tools / `xcrun` 损坏而失败**。
+
+若仍想用 `make` 手写命令，在已 `brew install make` 的前提下：
+
+```bash
+export PATH="$(pwd)/.tools/bin:$(go env GOPATH)/bin:$PATH"   # 需已安装 protoc 插件，见 scripts/codegen.sh
+gmake api && gmake config && go generate ./...
+```
+
+**彻底修复本机工具链**（可选，装好后可继续用 Apple `make`）：
+
+```bash
+sudo rm -rf /Library/Developer/CommandLineTools
+xcode-select --install
+```
+
+无 `gmake` 时可用纯 bash（需本机已有 `protoc` 与各插件在 `PATH`）：`./scripts/gen-proto.sh`
