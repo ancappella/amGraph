@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package map.v1;
+
+import "google/api/annotations.proto";
+
+option go_package = "amGraph/api/map/v1;v1";
+option java_multiple_files = true;
+option java_package = "dev.kratos.api.map.v1";
+
+// Map stores geographic features as GeoJSON (RFC 7946) in PostgreSQL JSONB.
+service Map {
+  rpc CreateFeature (CreateFeatureRequest) returns (Feature) {
+    option (google.api.http) = {
+      post: "/v1/map/features"
+      body: "*"
+    };
+  }
+  rpc GetFeature (GetFeatureRequest) returns (Feature) {
+    option (google.api.http) = {
+      get: "/v1/map/features/{id}"
+    };
+  }
+  rpc ListFeatures (ListFeaturesRequest) returns (ListFeaturesReply) {
+    option (google.api.http) = {
+      get: "/v1/map/features"
+    };
+  }
+}
+
+message CreateFeatureRequest {
+  string name = 1;
+  string description = 2;
+  // GeoJSON Geometry or Feature object as JSON text, e.g. {"type":"Point","coordinates":[116.4,39.9]}
+  string geojson = 3;
+}
+
+message GetFeatureRequest {
+  int64 id = 1;
+}
+
+message ListFeaturesRequest {
+  int32 page_size = 1;
+  int32 page_offset = 2;
+}
+
+message Feature {
+  int64 id = 1;
+  string name = 2;
+  string description = 3;
+  string geojson = 4;
+  string created_at = 5;
+  string updated_at = 6;
+}
+
+message ListFeaturesReply {
+  repeated Feature features = 1;
+}
