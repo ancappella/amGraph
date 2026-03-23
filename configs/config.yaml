@@ -8,7 +8,7 @@ server:
 data:
   database:
     driver: pgx
-    source: postgres://kratos:kratos@127.0.0.1:5432/helloworld?sslmode=disable
+    source: postgres://pgm-bp1amn22k9gg7z10-l6.pg.rds.aliyuncs.com:5432/helloworld?sslmode=disable
   redis:
     addr: 127.0.0.1:6379
     read_timeout: 0.2s
