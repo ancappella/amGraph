@@ -1,4 +1,4 @@
-package geode
+package gaode
 
 import (
 	"encoding/json"
